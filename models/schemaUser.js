@@ -32,7 +32,7 @@ userSchema.methods.setPassword = async function (password) {
 };
 // gdy user będzie się logował, porównanie
 userSchema.methods.validatePassword = async function (password) {
-  this.password = await bCrypt.compare(password, this.password);
+  return await bCrypt.compare(password, this.password);
 };
 
 const User = mongoose.model("User", userSchema, "users");

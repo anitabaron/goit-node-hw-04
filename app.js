@@ -2,6 +2,7 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 const connectDB = require("./db");
+require("./config/config-password");
 
 const app = express();
 

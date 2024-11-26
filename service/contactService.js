@@ -1,7 +1,7 @@
 const Contact = require("../models/schemaContact");
 
-const getAllContacts = async () => {
-  return await Contact.find();
+const getAllContacts = async (filter = {}) => {
+  return await Contact.find(filter);
 };
 
 const getContactById = async (contactId) => {
