@@ -34,23 +34,19 @@ const auth = (req, res, next) => {
 
 router.get("/", auth, async (req, res, next) => {
   try {
-    const { email } = req.user;
     const contacts = await getAllContacts({ owner: req.user._id });
     if (!contacts.length) {
       return res
         .status(404)
         .json({ message: "No contacts found for this user." });
     }
-    res.status(200).json({
-      data: contacts,
-      message: `Authorization was successful: ${email}`,
-    });
+    res.status(200).json(contacts);
   } catch (error) {
     next(error);
   }
 });
 
-router.get("/:contactId", async (req, res, next) => {
+router.get("/:contactId", auth, async (req, res, next) => {
   try {
     const id = req.params.contactId;
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -61,6 +57,9 @@ router.get("/:contactId", async (req, res, next) => {
       return res.status(404).json({
         message: "Contact not found.",
       });
+    }
+    if (contact.owner.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ message: "User unauthorized" });
     }
     res.status(200).json(contact);
   } catch (error) {
@@ -85,6 +84,9 @@ router.post("/", auth, async (req, res, next) => {
       favorite,
       owner: ownerId,
     });
+    if (newContact.owner.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ message: "User unauthorized" });
+    }
     res.status(201).json({
       message: "Contact created",
       contact: newContact,
@@ -94,8 +96,11 @@ router.post("/", auth, async (req, res, next) => {
   }
 });
 
-router.delete("/:contactId", async (req, res, next) => {
+router.delete("/:contactId", auth, async (req, res, next) => {
   try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Unauthorized: User not found" });
+    }
     const id = req.params.contactId;
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({ message: "Invalid contact ID format." });
@@ -107,13 +112,16 @@ router.delete("/:contactId", async (req, res, next) => {
     if (!deletedContact) {
       return res.status(404).json({ message: "Contact not found." });
     }
+    if (deletedContact.owner.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ message: "User unauthorized" });
+    }
     res.status(204).json({ message: "Contact deleted" });
   } catch (error) {
     next(error);
   }
 });
 
-router.put("/:contactId", async (req, res, next) => {
+router.put("/:contactId", auth, async (req, res, next) => {
   try {
     const id = req.params.contactId;
     const { name, email, phone, favorite } = req.body;
@@ -134,6 +142,9 @@ router.put("/:contactId", async (req, res, next) => {
     if (!updatedContact) {
       return res.status(404).json({ message: "Contact not found." });
     }
+    if (updatedContact.owner.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ message: "User unauthorized" });
+    }
     res.status(200).json({
       message: "Contact updated",
       contact: updatedContact,
@@ -143,7 +154,7 @@ router.put("/:contactId", async (req, res, next) => {
   }
 });
 
-router.patch("/:contactId/favorite", async (req, res, next) => {
+router.patch("/:contactId/favorite", auth, async (req, res, next) => {
   try {
     const id = req.params.contactId;
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -158,6 +169,9 @@ router.patch("/:contactId/favorite", async (req, res, next) => {
     });
     if (!updatedContact) {
       return res.status(404).json({ message: "Contact not found" });
+    }
+    if (updatedContact.owner.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ message: "User unauthorized" });
     }
     res.status(200).json({
       message: "Contact updated",
