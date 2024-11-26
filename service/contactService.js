@@ -1,4 +1,4 @@
-const Contact = require("../models/schema");
+const Contact = require("../models/schemaContact");
 
 const getAllContacts = async () => {
   return await Contact.find();
@@ -15,6 +15,8 @@ const addContact = async (body) => {
 const updateContact = async (contactId, body) => {
   return await Contact.findByIdAndUpdate(contactId, body, {
     new: true,
+    runValidators: true,
+    strict: "throw",
   });
 };
 

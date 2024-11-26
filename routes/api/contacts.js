@@ -1,4 +1,3 @@
-// const Joi = require("joi");
 const express = require("express");
 const {
   getAllContacts,
@@ -7,22 +6,6 @@ const {
   updateContact,
   removeContact,
 } = require("../../service/contactService");
-
-// const schema = Joi.object({
-//   name: Joi.string()
-//     .pattern(/^[a-zA-Z]+( [a-zA-Z]+)*$/)
-//     .min(2)
-//     .max(40)
-//     .required(),
-//   email: Joi.string()
-//     .email({
-//       minDomainSegments: 2,
-//       tlds: { allow: ["com", "net", "pl"] },
-//     })
-//     .required(),
-//   phone: Joi.number().integer().required(),
-// favorite: Joi.boolean()
-// });
 
 const router = express.Router();
 
@@ -85,7 +68,7 @@ router.delete("/:contactId", async (req, res, next) => {
     if (!deletedContact) {
       return res.status(404).json({ message: "Contact not found." });
     }
-    res.status(200).json({ message: "Contact deleted" });
+    res.status(204).json({ message: "Contact deleted" });
   } catch (error) {
     next(error);
   }

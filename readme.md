@@ -1,5 +1,5 @@
-## GoIT Node.js Course Homework
+## GoIT Node.js course
 
-Homework 03
+Homework 04
 
-# Connecting to MongoDB database via Mongoose
+# Authentication / authorization
