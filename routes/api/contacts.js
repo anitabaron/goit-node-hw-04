@@ -20,11 +20,12 @@ const auth = (req, res, next) => {
         return res.status(401).json({
           status: "error",
           code: 401,
-          message: "Unauthorized",
-          data: "Unauthorized",
+          message: "Unauthorized user",
+          data: "Unauthorized user",
         });
       }
       req.user = user;
+      console.log("Auth user: ", user);
       next();
     }
   );

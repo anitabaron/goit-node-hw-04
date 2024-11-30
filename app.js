@@ -2,12 +2,14 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 const connectDB = require("./db");
+const passport = require("passport");
 require("./config/config-password");
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(passport.initialize());
 
 connectDB();
 
