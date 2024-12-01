@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../../models/schemaUser");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const auth = require("./contacts.js");
+const auth = require("../../auth/auth");
 
 const secret = process.env.AUTH_SECRET;
 

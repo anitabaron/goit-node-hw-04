@@ -6,32 +6,10 @@ const {
   updateContact,
   removeContact,
 } = require("../../service/contactService");
-const passport = require("passport");
+const auth = require("../../auth/auth");
 require("dotenv").config();
 
 const router = express.Router();
-
-const auth = (req, res, next) => {
-  const middleware = passport.authenticate(
-    "jwt",
-    { session: false },
-    (err, user) => {
-      if (err || !user) {
-        return res.status(401).json({
-          status: "error",
-          code: 401,
-          message: "Unauthorized user",
-          data: "Unauthorized user",
-        });
-      }
-      req.user = user;
-      console.log("Auth user: ", user);
-      next();
-    }
-  );
-
-  middleware(req, res, next);
-};
 
 router.get("/", auth, async (req, res, next) => {
   try {
