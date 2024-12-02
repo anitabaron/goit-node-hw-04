@@ -8,7 +8,6 @@ const secret = process.env.AUTH_SECRET;
 
 const router = express.Router();
 
-// zrobić błąd walidacji na poziomie wpisywania Joi (?), na poziomie bazy jest mongoose (zgodnie ze Schema)
 router.post("/signup", async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).lean();
@@ -22,13 +21,13 @@ router.post("/signup", async (req, res, next) => {
     await newUser.save();
     return res
       .status(201)
-      .json({ message: `Registration succesful for ${email}` });
+      .json({ message: `Registration succesful: user ${email}` });
   } catch (error) {
     next(error);
   }
 });
 
-router.post("/login", auth, async (req, res, next) => {
+router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -48,7 +47,7 @@ router.post("/login", auth, async (req, res, next) => {
       user.token = token;
       await user.save();
       return res.status(200).json({
-        message: `Login succesful for ${email}`,
+        message: `Login succesful: user ${email}`,
         data: { token },
       });
     }
@@ -60,12 +59,13 @@ router.post("/login", auth, async (req, res, next) => {
 router.get("/logout", auth, async (req, res, next) => {
   try {
     const user = req.user;
-    user.token = null;
-    await user.save();
 
     if (!user) {
       return res.status(401).json({ message: "User not authorized!" });
     }
+    user.token = null;
+    await user.save();
+
     return res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     next(error);
@@ -76,10 +76,6 @@ router.get("/current", auth, async (req, res, next) => {
   try {
     const user = req.user;
     // const user = await User.findById(req.user._id);
-    console.log("Current user:", user);
-    console.log("Received contact ID:", req.params.contactId);
-    console.log("Headers:", req.headers);
-    console.log("User in current route:", req.user);
     if (!user) {
       return res.status(401).json({ message: "User not authorized!" });
     }

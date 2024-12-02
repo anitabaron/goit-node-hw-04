@@ -5,7 +5,7 @@ const auth = (req, res, next) => {
     "jwt",
     { session: false },
     (err, user) => {
-      if (err || !user) {
+      if (err || !user || user.token === null) {
         return res.status(401).json({
           status: "error",
           code: 401,
@@ -14,7 +14,6 @@ const auth = (req, res, next) => {
         });
       }
       req.user = user;
-      console.log("Auth user: ", user); // później usunąć
       next();
     }
   );
